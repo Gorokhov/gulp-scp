@@ -20,7 +20,8 @@ gulp.task('default', function () {
             host: '255.255.255.255',
             user: 'username',
             port: 22,
-            path: '~/dir'
+            path: '~/dir'.
+            cygwin:true
         }));
 });
 ```
@@ -51,6 +52,13 @@ Default: `''`
 Type: `String`
 
 The path to transfer to has to exist.
+
+#### options.cygwin
+
+Default: `false`
+Type: `String`
+
+A param that indicates that scp is going to be started from cygwin environment, fixes destanation paths.
 
 ## License
 
