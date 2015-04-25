@@ -4,6 +4,7 @@ var gutil = require('gulp-util');
 var through = require('through2');
 var assign = require('object-assign');
 var scp = require('scp');
+var path = require('path');
 
 module.exports = function (options) {
     options = assign({
@@ -37,25 +38,31 @@ module.exports = function (options) {
         }
 
         //Folder only allows 1 path
-        if(options.folder && files.length){
+        if (options.folder && files.length) {
             return cb();
         }
 
         this.push(file);
-        files.push(file.path);
+        var filePath = options.cygwin ? path.relative(process.cwd(), file.path) : file.path;
+        files.push(filePath);
         return cb();
     }, function (cb) {
         if (files.length > 0) {
-            options.file = files.join(' ');
-            scp.send(options, function(err){
-                if(err) {
-                    gutil.log('gulp-scp:', gutil.colors.red(err));
-                } else {
-                    gutil.log('gulp-scp:', gutil.colors.green(files.length, files.length === 1 ? 'file' : 'files', 'transferred successfully'));
-                }
-                cb();
-                if (options.cb) {options.cb()}
-            });
+
+            for (var i = 0; i < files.length; i++) {
+                options.file = files[i];
+                scp.send(options, function (err) {
+                    if (err) {
+                        gutil.log('gulp-scp:', gutil.colors.red(err));
+                    } else {
+                        gutil.log('gulp-scp:', gutil.colors.green(files.length, files.length === 1 ? 'file' : 'files', 'transferred successfully'));
+                    }
+                    cb();
+                    if (options.cb) {
+                        options.cb()
+                    }
+                });
+            }
         } else {
             gutil.log('gulp-scp:', gutil.colors.green('No files transferred'));
             cb();

@@ -2,6 +2,9 @@
 logs
 *.log
 
+.idea
+git-scp.iml
+
 # Runtime data
 pids
 *.pid
